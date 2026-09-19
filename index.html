@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAQUERIA EL PARIENTE - PRACTICA MATH.ATAN2</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts for Bold Menu Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        parienteRed: '#D60000',
+                        parienteRedDark: '#A00000',
+                        parienteBlack: '#000000',
+                        parienteBg: '#FFFFFF',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Double red frame border styling */
+        .menu-frame {
+            border: 6px solid #D60000;
+            outline: 3px solid #D60000;
+            outline-offset: 4px;
+            background-color: #FFFFFF;
+        }
+
+        /* Canvas crosshair cursor */
+        #gameCanvas {
+            cursor: crosshair;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFFFFF;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D60000;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-6 select-none bg-white">
+
+    <!-- Main Outer Container Frame -->
+    <div class="w-full max-w-5xl menu-frame p-4 sm:p-8 shadow-2xl relative min-h-[85vh] flex flex-col justify-between my-auto bg-white">
+
+        <!-- Top Accent Border Line -->
+        <div class="absolute top-2 left-2 right-2 border-t-2 border-parienteRed pointer-events-none"></div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 1: START MENU                       -->
+        <!-- ========================================== -->
+        <div id="menu-screen" class="flex flex-col items-center justify-between my-auto py-4 text-center space-y-6">
+            
+            <!-- Header Title Block -->
+            <div class="space-y-3 max-w-3xl">
+                <p class="text-parienteRed font-black tracking-widest text-xs sm:text-sm uppercase">
+                    PROYECTO INTERACTIVO
+                </p>
+                <h1 class="text-4xl sm:text-6xl font-black text-parienteBlack uppercase tracking-tight">
+                    TAQUERIA EL PARIENTE
+                </h1>
+                <h2 class="text-base sm:text-xl font-bold text-parienteRed uppercase tracking-wider">
+                    ACTIVIDAD INTERACTIVA - ROTACION CON MATH.ATAN2
+                </h2>
+                <div class="w-32 h-1.5 bg-parienteRed mx-auto my-3"></div>
+                
+                <!-- Project Context Clarification Box -->
+                <div class="max-w-2xl mx-auto bg-white border-2 border-parienteRed p-4 text-left my-4 shadow-[4px_4px_0px_0px_#D60000]">
+                    <p class="text-xs sm:text-sm text-parienteBlack font-bold leading-relaxed">
+                        NOTA ACLARATORIA: Este sitio reutiliza la identidad visual y concepto gráfico diseñados previamente para el proyecto del restaurante de tacos Taquería El Pariente, aplicados ahora para la práctica de programación interactiva.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Character Image Preview (cerdo-01.png) -->
+            <div class="relative my-2">
+                <div class="w-48 h-48 sm:w-56 sm:h-56 border-4 border-black p-3 bg-white flex items-center justify-center shadow-[6px_6px_0px_0px_#D60000]">
+                    <img id="menu-logo-img" src="cerdo-01.png" alt="Taquería El Pariente Cerdo" 
+                         class="max-w-full max-h-full object-contain"
+                         onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'text-center text-xs font-mono p-2 text-parienteRed border-2 border-dashed border-parienteRed font-bold\'>IMAGEN: cerdo-01.png<br><br><span class=\'text-black\'>Coloque el archivo cerdo-01.png en la misma carpeta que index.html</span></div>';">
+                </div>
+                <div class="mt-2 text-[11px] font-mono font-bold text-black uppercase tracking-wider">
+                    ARCHIVO REQUERIDO: cerdo-01.png
+                </div>
+            </div>
+
+            <!-- Start Activity Button -->
+            <div class="w-full max-w-sm space-y-3">
+                <button id="start-btn" 
+                        class="w-full bg-parienteRed hover:bg-parienteBlack text-white font-black text-lg sm:text-xl py-4 px-8 border-2 border-black shadow-[5px_5px_0px_0px_#000000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase tracking-wider block">
+                    INICIAR ACTIVIDAD
+                </button>
+            </div>
+
+            <!-- Trigonometry Concept Summary Card -->
+            <div class="max-w-2xl w-full bg-white border-2 border-black p-4 text-left font-mono text-xs sm:text-sm space-y-2 shadow-[4px_4px_0px_0px_#000000]">
+                <div class="text-parienteRed font-bold font-sans tracking-wide uppercase border-b-2 border-black pb-1">
+                    CONCEPTO MATEMATICO
+                </div>
+                <p class="text-black font-sans font-bold leading-relaxed">
+                    La función <code class="bg-red-100 text-parienteRed px-1 py-0.5 border border-parienteRed font-mono font-bold">Math.atan2(mouseY - cerdoY, mouseX - cerdoX)</code> devuelve el ángulo en radianes entre el centro del personaje y la posición actual del puntero del ratón, logrando una orientación continua de 360 grados.
+                </p>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 2: INTERACTIVE CANVAS ACTIVITY      -->
+        <!-- ========================================== -->
+        <div id="app-screen" class="hidden flex-col justify-between space-y-4">
+            
+            <!-- Header Bar -->
+            <div class="flex flex-col sm:flex-row items-center justify-between border-b-4 border-black pb-3 gap-3">
+                <button id="back-btn" 
+                        class="w-full sm:w-auto border-2 border-black bg-white hover:bg-parienteRed hover:text-white text-black font-black text-xs sm:text-sm px-4 py-2 uppercase tracking-wider shadow-[3px_3px_0px_0px_#000000] transition-all">
+                    VOLVER AL MENU PRINCIPAL
+                </button>
+                <div class="text-center">
+                    <h2 class="text-2xl sm:text-3xl font-black text-parienteBlack uppercase tracking-tight">
+                        TAQUERIA EL PARIENTE
+                    </h2>
+                    <p class="text-xs font-extrabold text-parienteRed uppercase tracking-wider">PRACTICA INTERACTIVA MATH.ATAN2</p>
+                </div>
+                <div class="hidden sm:block text-xs font-mono text-white bg-parienteRed font-bold border-2 border-black px-3 py-1 shadow-[2px_2px_0px_0px_#000000]">
+                    CERDO-01.PNG
+                </div>
+            </div>
+
+            <!-- Main Interactive Canvas and Telemetry Sidebar -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
+                
+                <!-- Canvas Area (3 Columns) -->
+                <div class="lg:col-span-3 border-4 border-black bg-white relative shadow-[6px_6px_0px_0px_#D60000] overflow-hidden flex items-center justify-center min-h-[380px] sm:min-h-[480px]">
+                    <canvas id="gameCanvas" class="w-full h-full block bg-white"></canvas>
+
+                    <!-- Instruction Tag -->
+                    <div class="absolute bottom-3 left-3 bg-white border-2 border-black px-3 py-1.5 text-[11px] font-mono font-bold text-black shadow-[3px_3px_0px_0px_#000000] pointer-events-none uppercase">
+                        MUEVA EL RATON PARA ROTAR A CERDO-01.PNG
+                    </div>
+                </div>
+
+                <!-- HUD Telemetry and Controls Sidebar (1 Column) -->
+                <div class="lg:col-span-1 space-y-4">
+                    
+                    <!-- Telemetry Data Panel -->
+                    <div class="border-2 border-black bg-white p-3 space-y-3 shadow-[4px_4px_0px_0px_#000000]">
+                        <h3 class="text-xs font-black uppercase tracking-wider bg-parienteBlack text-white p-2 text-center border border-black">
+                            DATOS TELEMETRICOS
+                        </h3>
+                        
+                        <div class="space-y-2 font-mono text-xs">
+                            <div class="flex justify-between border-b border-gray-200 pb-1">
+                                <span class="text-gray-700 font-bold">Raton (X, Y):</span>
+                                <span id="hud-mouse" class="font-bold text-black">0, 0</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-200 pb-1">
+                                <span class="text-gray-700 font-bold">Cerdo (X, Y):</span>
+                                <span id="hud-pig-pos" class="font-bold text-black">0, 0</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-200 pb-1">
+                                <span class="text-gray-700 font-bold">Delta X (dx):</span>
+                                <span id="hud-dx" class="font-bold text-black">0</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-200 pb-1">
+                                <span class="text-gray-700 font-bold">Delta Y (dy):</span>
+                                <span id="hud-dy" class="font-bold text-black">0</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-200 pb-1 bg-red-50 p-1 border-l-2 border-parienteRed">
+                                <span class="text-parienteRed font-bold">Radianes:</span>
+                                <span id="hud-rad" class="font-bold text-parienteRed">0.000</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-200 pb-1 bg-red-50 p-1 border-l-2 border-parienteRed">
+                                <span class="text-parienteRed font-bold">Grados:</span>
+                                <span id="hud-deg" class="font-bold text-parienteRed">0.0 deg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Controls Panel -->
+                    <div class="border-2 border-black bg-white p-3 space-y-3 shadow-[4px_4px_0px_0px_#000000]">
+                        <h3 class="text-xs font-black uppercase tracking-wider bg-parienteRed text-white p-2 text-center border border-black">
+                            CONTROLES
+                        </h3>
+
+                        <!-- Pause / Resume Rotation -->
+                        <button id="pause-btn" class="w-full bg-parienteBlack text-white hover:bg-parienteRed font-extrabold text-xs py-2 border-2 border-black uppercase transition-colors shadow-[2px_2px_0px_0px_#D60000]">
+                            PAUSAR ROTACION
+                        </button>
+
+                        <!-- Toggle Direction Vector Line -->
+                        <label class="flex items-center justify-between cursor-pointer text-xs font-black text-black hover:text-parienteRed pt-1 border-t border-gray-200">
+                            <span>VECTOR GUIA</span>
+                            <input type="checkbox" id="toggle-vector" checked class="w-4 h-4 accent-parienteRed cursor-pointer">
+                        </label>
+
+                        <!-- Angle Offset Slider -->
+                        <div class="space-y-1 pt-2 border-t border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <label class="text-xs font-black uppercase">OFFSET ANGULO:</label>
+                                <span id="offset-val" class="text-xs font-mono font-bold text-parienteRed">0 deg</span>
+                            </div>
+                            <input type="range" id="offset-slider" min="-180" max="180" value="0" step="5" 
+                                   class="w-full accent-parienteRed cursor-pointer">
+                            <p class="text-[10px] text-gray-600 font-bold">Ajusta la orientacion inicial de cerdo-01.png</p>
+                        </div>
+
+                        <!-- Reset Center Position -->
+                        <button id="reset-pos-btn" class="w-full bg-white hover:bg-black hover:text-white text-black font-extrabold text-xs py-2 border-2 border-black uppercase transition-colors shadow-[2px_2px_0px_0px_#000000]">
+                            CENTRAR PERSONAJE
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer Accent -->
+        <div class="mt-6 pt-3 border-t-2 border-black flex flex-col sm:flex-row justify-between items-center text-xs font-black text-black gap-2">
+            <div>
+                <span>TAQUERIA EL PARIENTE - PRACTICA WEB</span>
+            </div>
+            <div class="text-parienteRed font-black uppercase tracking-wider">
+                ALGO BIEN, ALWAYS!
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC                           -->
+    <!-- ========================================== -->
+    <script>
+        // DOM Elements
+        const menuScreen = document.getElementById('menu-screen');
+        const appScreen = document.getElementById('app-screen');
+        const startBtn = document.getElementById('start-btn');
+        const backBtn = document.getElementById('back-btn');
+
+        // Canvas Context
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Telemetry HUD Elements
+        const hudDx = document.getElementById('hud-dx');
+        const hudDy = document.getElementById('hud-dy');
+        const hudRad = document.getElementById('hud-rad');
+        const hudDeg = document.getElementById('hud-deg');
+        const hudMouse = document.getElementById('hud-mouse');
+        const hudPigPos = document.getElementById('hud-pig-pos');
+
+        // Interactive Controls
+        const toggleVector = document.getElementById('toggle-vector');
+        const offsetSlider = document.getElementById('offset-slider');
+        const offsetVal = document.getElementById('offset-val');
+        const resetPosBtn = document.getElementById('reset-pos-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+
+        // Load Character Image (cerdo-01.png)
+        const pigImg = new Image();
+        pigImg.src = 'cerdo-01.png';
+        let imgLoaded = false;
+
+        pigImg.onload = () => {
+            imgLoaded = true;
+        };
+
+        pigImg.onerror = () => {
+            imgLoaded = false;
+        };
+
+        // State Variables
+        let pig = {
+            x: 0,
+            y: 0,
+            angle: 0,
+            size: 120
+        };
+
+        let mouse = {
+            x: 0,
+            y: 0
+        };
+
+        let isPaused = false;
+        let animationFrameId = null;
+
+        // Resize Canvas dynamically
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            if (pig.x === 0 && pig.y === 0) {
+                resetPigPosition();
+            }
+        }
+
+        function resetPigPosition() {
+            pig.x = canvas.width / 2;
+            pig.y = canvas.height / 2;
+            mouse.x = pig.x + 130;
+            mouse.y = pig.y;
+        }
+
+        // Mouse movement listener over canvas
+        canvas.addEventListener('mousemove', (e) => {
+            if (isPaused) return;
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        // Touch movement listener for mobile touchscreens
+        canvas.addEventListener('touchmove', (e) => {
+            if (isPaused) return;
+            if (e.touches.length > 0) {
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = e.touches[0].clientX - rect.left;
+                mouse.y = e.touches[0].clientY - rect.top;
+            }
+        }, { passive: true });
+
+        // Main Animation Loop
+        function render() {
+            // Clear Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Background Grid Lines
+            drawGrid();
+
+            // Calculate Math.atan2(dy, dx)
+            const dx = mouse.x - pig.x;
+            const dy = mouse.y - pig.y;
+            
+            if (!isPaused) {
+                // CORE ROTATION CALCULATION
+                pig.angle = Math.atan2(dy, dx);
+            }
+
+            // Draw Vector Guide Line if checked
+            if (toggleVector.checked) {
+                drawVectorLine();
+            }
+
+            // Render Character Image with Atan2 Rotation
+            drawPigCharacter();
+
+            // Update Telemetry Panel Values
+            updateHUD(dx, dy, pig.angle);
+
+            animationFrameId = requestAnimationFrame(render);
+        }
+
+        // Draw Grid Lines
+        function drawGrid() {
+            const gridSize = 40;
+            ctx.strokeStyle = '#F0F0F0';
+            ctx.lineWidth = 1;
+
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+
+        // Draw Direction Vector Line
+        function drawVectorLine() {
+            ctx.save();
+            
+            // Red Dashed Line
+            ctx.beginPath();
+            ctx.setLineDash([6, 6]);
+            ctx.moveTo(pig.x, pig.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.strokeStyle = '#D60000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Target Pointer Circle
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, 8, 0, Math.PI * 2);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, 3, 0, Math.PI * 2);
+            ctx.fillStyle = '#D60000';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // Draw cerdo-01.png Character with Atan2 Rotation
+        function drawPigCharacter() {
+            ctx.save();
+            ctx.translate(pig.x, pig.y);
+
+            // Apply Math.atan2 angle + user offset angle
+            const offsetDegrees = parseFloat(offsetSlider.value);
+            const offsetRadians = (offsetDegrees * Math.PI) / 180;
+            
+            ctx.rotate(pig.angle + offsetRadians);
+
+            if (imgLoaded) {
+                // Draw loaded cerdo-01.png centered at origin
+                ctx.drawImage(pigImg, -pig.size / 2, -pig.size / 2, pig.size, pig.size);
+            } else {
+                // Vector fallback if image is missing
+                drawFallbackVectorPig();
+            }
+
+            ctx.restore();
+        }
+
+        // Fallback drawing if image is missing
+        function drawFallbackVectorPig() {
+            ctx.beginPath();
+            ctx.arc(0, 0, pig.size / 2, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#000000';
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(16, 0, 16, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#000000';
+            ctx.stroke();
+
+            ctx.fillStyle = '#D60000';
+            ctx.beginPath();
+            ctx.arc(20, -5, 3, 0, Math.PI * 2);
+            ctx.arc(20, 5, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Update Telemetry Panel
+        function updateHUD(dx, dy, rad) {
+            const deg = (rad * 180) / Math.PI;
+            
+            hudDx.textContent = Math.round(dx);
+            hudDy.textContent = Math.round(dy);
+            hudRad.textContent = rad.toFixed(3);
+            hudDeg.textContent = deg.toFixed(1) + ' deg';
+            hudMouse.textContent = `${Math.round(mouse.x)}, ${Math.round(mouse.y)}`;
+            hudPigPos.textContent = `${Math.round(pig.x)}, ${Math.round(pig.y)}`;
+        }
+
+        // UI Navigation & Event Listeners
+        startBtn.addEventListener('click', () => {
+            menuScreen.classList.add('hidden');
+            appScreen.classList.remove('hidden');
+            appScreen.classList.add('flex');
+            resizeCanvas();
+            resetPigPosition();
+            render();
+        });
+
+        backBtn.addEventListener('click', () => {
+            appScreen.classList.add('hidden');
+            appScreen.classList.remove('flex');
+            menuScreen.classList.remove('hidden');
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            if (isPaused) {
+                pauseBtn.textContent = 'REANUDAR ROTACION';
+                pauseBtn.classList.remove('bg-parienteBlack');
+                pauseBtn.classList.add('bg-parienteRed');
+            } else {
+                pauseBtn.textContent = 'PAUSAR ROTACION';
+                pauseBtn.classList.remove('bg-parienteRed');
+                pauseBtn.classList.add('bg-parienteBlack');
+            }
+        });
+
+        offsetSlider.addEventListener('input', (e) => {
+            offsetVal.textContent = `${e.target.value} deg`;
+        });
+
+        resetPosBtn.addEventListener('click', () => {
+            resetPigPosition();
+        });
+
+        window.addEventListener('resize', () => {
+            if (!appScreen.classList.contains('hidden')) {
+                resizeCanvas();
+            }
+        });
+
+    </script>
+</body>
+</html>
